@@ -6,19 +6,17 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Input from "@material-ui/core/Input";
 import Paper from "@material-ui/core/Paper";
-import IconButton from "@material-ui/core/IconButton";
-// Icons
-import EditIcon from "@material-ui/icons/EditOutlined";
-import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
-import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
+import LinearProgress from "@mui/material/LinearProgress";
 import { TextField } from "@mui/material";
+
+import LoadingImg from "../../assets/loading.gif";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
-    marginTop: theme.spacing(3),
+    width: "95vw",
+    marginLeft: "16px",
+    marginRight: "16px",
     overflowX: "auto",
   },
   table: {
@@ -30,6 +28,12 @@ const useStyles = makeStyles((theme) => ({
   tableCell: {
     width: 130,
     height: 40,
+
+  },
+  rowColor:{
+    "&:hover":{
+      colorBackground: "black !important",
+    },
   },
   input: {
     width: 130,
@@ -38,8 +42,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const GsheetPage = () => {
-  const [rows, setRows] = useState([
-  ]);
+  const [rows, setRows] = useState([]);
+
+  const [loadingTable, setLoadingTable] = useState(true);
+
+  const [sedingEmail, setSendingEmail] = useState(false);
+
   const columns = ["id", "tasa", "email"];
 
   const createData = (id, tasa, email) => {
@@ -57,47 +65,45 @@ const GsheetPage = () => {
 
     clearTimeout(timeout.current);
     timeout.current = setTimeout(() => {
+      setSendingEmail(true);
+
+      let requestOptions = {
+        method: "POST",
+        redirect: "follow",
+      };
+
+      fetch(
+          `https://xepelin-backpt.herokuapp.com/send-email/?idOp=${newArray[index].id}&tasa=${newArray[index].tasa}&email=daniellozano.ee@gmail.com`,
+          requestOptions
+      )
+          .then((response) => response.text())
+          .then((result) => console.log(result))
+          .catch((error) => {
+            console.log("error", error)
+            setSendingEmail(false)
+          });
+
 
       let formdata = new FormData();
       formdata.append("id Op", newArray[index].id);
       formdata.append("Tasa", newArray[index].tasa);
 
       let requestOptions2 = {
-        method: 'POST',
-        body: formdata,
-        redirect: 'follow'
-      };
-      fetch("https://script.google.com/macros/s/AKfycbz4Fm7Cd__doY1j5kdvP44FeqK269xeiXR6S_efBf6ijmxXliBAPESQNIz0mP7syjwcIw/exec", requestOptions2)
-          .then(response => response.text())
-          .then(result => console.log(result))
-          .catch(error => console.log('error', error));
-
-      //llamado al correo
-      let myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-
-      let raw = JSON.stringify({
-        idOp: newArray[index].id,
-        tasa: newArray[index].tasa,
-        email: newArray[index].email,
-      });
-
-
-      let requestOptions = {
         method: "POST",
-        headers: myHeaders,
-        body: raw,
+        body: formdata,
         redirect: "follow",
       };
-
       fetch(
-        "https://hooks.zapier.com/hooks/catch/6872019/oahrt5g/",
-        requestOptions
+        "https://script.google.com/macros/s/AKfycbz4Fm7Cd__doY1j5kdvP44FeqK269xeiXR6S_efBf6ijmxXliBAPESQNIz0mP7syjwcIw/exec",
+        requestOptions2
       )
         .then((response) => response.text())
         .then((result) => console.log(result))
         .catch((error) => console.log("error", error));
-    }, 2000);
+
+      //llamado al correo
+
+    }, 1000);
   };
   const fetchData = () => {
     fetch(
@@ -107,11 +113,12 @@ const GsheetPage = () => {
       .then((data) => {
         let newData = data.data.map((item, index) => {
           if (index !== 0) {
-             return createData(item.idOp, item.tasa, item.email);
+            return createData(item.idOp, item.tasa, item.email);
           }
         });
         newData.shift();
         setRows(newData);
+        setLoadingTable(false);
       });
   };
 
@@ -121,44 +128,60 @@ const GsheetPage = () => {
 
   return (
     <div>
-      <Paper className={classes.root}>
+      {loadingTable && (<img src={LoadingImg} alt="img"/>)}
+      <div className="gsheet-title">
+        <h3>Editar tasas de usuarios</h3>
+        <p>Edita las tasas de las siguientes operaciones, recuerda que al hacerlo se enviara un correo informando el cambio.</p>
+      </div>
+
+      { !loadingTable && <Paper className={classes.root}>
+        {sedingEmail && <LinearProgress color="secondary"/>}
+
         <Table className={classes.table} aria-label="caption table">
           <TableHead>
             <TableRow>
-              <TableCell align="left" className="table-header">Id Operativo</TableCell>
-              <TableCell align="left" className="table-header">Tasa</TableCell>
-              <TableCell align="left" className="table-header">Email</TableCell>
+              <TableCell align="left" className="table-header">
+                <h6>Id Operativo</h6>
+              </TableCell>
+              <TableCell align="left" className="table-header">
+                <h6>Tasa</h6>
+              </TableCell>
+              <TableCell align="left" className="table-header">
+                <h6>Email</h6>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows &&
-              rows.map((row, index) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                    {columns.map((column) => {
-                      const value = row[column];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column === "tasa" ? (
-                            <TextField
-                              id="outlined-basic"
-                              label=""
-                              value={value}
-                              variant="standard"
-                              onChange={(e) => handleChangeTasa(index, e)}
-                            />
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+                rows.map((row, index) => {
+                  return (
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.id}  className={classes.rowColor}>
+                        {columns.map((column) => {
+                          const value = row[column];
+                          return (
+                              <TableCell key={column.id} align={column.align}>
+                                {column === "tasa" ? (
+                                    <TextField
+                                        id="outlined-basic"
+                                        label=""
+                                        value={value}
+                                        variant="outlined"
+                                        color="secondary"
+                                        disabled={sedingEmail}
+                                        onChange={(e) => handleChangeTasa(index, e)}
+                                    />
+                                ) : (
+                                    value
+                                )}
+                              </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                  );
+                })}
           </TableBody>
         </Table>
-      </Paper>
+      </Paper>}
     </div>
   );
 };

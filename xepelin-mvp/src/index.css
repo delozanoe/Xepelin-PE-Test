@@ -13,9 +13,19 @@ code {
 }
 
 h1{
-  font-family: 'Poppins', sans-serif;;
+  font-family: 'Poppins', sans-serif;
 }
 
 p{
   font-family: 'Source Sans Pro', sans-serif;
 }
+.no-borders{
+  padding: 0px!important;
+  margin: 0px!important;
+}
+
+h6{
+  font-family: 'Poppins', sans-serif;
+
+}
+

@@ -15,6 +15,18 @@ const LoginPage = (setLogIn) => {
       username: "user2",
       password: "pass2",
     },
+    {
+      username: "daniellozano.ee@gmail.com",
+      password: "daniellozano",
+    },
+    {
+      username: "ianiv@xepelin.com",
+      password: "xepelin",
+    },
+    {
+      username: "admin@xepelin.com",
+      password: "admin",
+    },
   ];
 
   const errors = {
@@ -24,9 +36,8 @@ const LoginPage = (setLogIn) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  console.log("TENGO SUENO")
     let { username, password } = document.forms[0];
-    console.log(document.forms[0])
+
     // Find users from the database
     const userData = database.find((user) => user.username === username.value);
 
@@ -35,9 +46,7 @@ const LoginPage = (setLogIn) => {
         // Invalid password
         setErrorMessages({ name: "pass", message: errors.passwordM });
       } else {
-        console.log("SI ENTRO");
         //setSubmitted(true);
-        console.log(setLogIn);
         setLogIn.setLogin(false);
       }
     } else {
@@ -47,9 +56,9 @@ const LoginPage = (setLogIn) => {
   };
 
   const renderErrorMessage = (name) =>
-      name === errorMessages.name && (
-          <div className="error">{errorMessages.message}</div>
-      );
+    name === errorMessages.name && (
+      <div className="error">{errorMessages.message}</div>
+    );
 
   return (
     <div className="row fullpage-height">
@@ -64,11 +73,10 @@ const LoginPage = (setLogIn) => {
             <div className="space-div"></div>
             <div className="row">
               <TextField
-                // html input attribute
                 name="username"
-                type=""
+                type="text"
                 placeholder="johndoe@email.com"
-                // pass down to FormLabel as children
+                color="secondary"
                 label="Email"
                 required
               />
@@ -78,6 +86,7 @@ const LoginPage = (setLogIn) => {
                 type="password"
                 placeholder="password"
                 label="Password"
+                color="secondary"
                 required
               />
               <div className="space-div"></div>
@@ -85,12 +94,14 @@ const LoginPage = (setLogIn) => {
                 variant="contained"
                 className="principal-button"
                 type="submit"
+                color="secondary"
+                size="medium"
                 disableElevation
               >
-                Ingresar
+                <h6 className={"no-borders"}>Ingresar</h6>
               </Button>
               <div className="space-div"></div>
-              <a>Recuperar acceso a mi cuenta</a>
+
               <div className="space-div"></div>
               <div className="space-div"></div>
             </div>
