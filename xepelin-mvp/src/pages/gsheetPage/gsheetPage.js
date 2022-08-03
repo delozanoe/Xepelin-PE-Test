@@ -129,12 +129,14 @@ const GsheetPage = () => {
   return (
     <div>
       {loadingTable && (<img src={LoadingImg} alt="img"/>)}
-      <div className="gsheet-title">
-        <h3>Editar tasas de usuarios</h3>
-        <p>Edita las tasas de las siguientes operaciones, recuerda que al hacerlo se enviara un correo informando el cambio.</p>
-      </div>
 
-      { !loadingTable && <Paper className={classes.root}>
+
+      { !loadingTable && ( <div>
+        <div className="gsheet-title">
+          <h3>Editar tasas de usuarios</h3>
+          <p>Edita las tasas de las siguientes operaciones, recuerda que al hacerlo se enviara un correo informando el cambio.</p>
+        </div>
+      <Paper className={classes.root}>
         {sedingEmail && <LinearProgress color="secondary"/>}
 
         <Table className={classes.table} aria-label="caption table">
@@ -181,7 +183,8 @@ const GsheetPage = () => {
                 })}
           </TableBody>
         </Table>
-      </Paper>}
+      </Paper>
+      </div>)}
     </div>
   );
 };
