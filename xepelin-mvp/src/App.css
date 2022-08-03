@@ -32,7 +32,45 @@
   from {
     transform: rotate(0deg);
   }
-  to {
+  to {  
     transform: rotate(360deg);
   }
+}
+
+.banner {
+  width: 100%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+.principal-img {
+  height: 66px;
+
+}
+
+
+.center-items{
+  display: grid;
+  place-items: center;
+
+}
+.fullpage-height{
+  height: 90vh;
+}
+.login-form{
+  width: 420px;
+  
+}
+.space-div{
+  height: 16px;
+}
+
+.principal-button{
+  padding: 6px 40px!important;
+}
+
+.media-continer{
+  background-color: rgb(246, 249, 255);
+}
+
+.table-header{
+  text-decoration: aqua;
 }
